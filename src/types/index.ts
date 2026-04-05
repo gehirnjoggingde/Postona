@@ -57,12 +57,17 @@ export interface Post {
 export interface Schedule {
   id: string;
   user_id: string;
-  topic: string;          // z.B. "KI im Marketing", "Leadership"
-  frequency: 'daily' | 'weekly' | 'biweekly';
-  post_time: string;      // Format: "HH:MM" z.B. "09:00"
+  topic: string;
+  frequency: 'daily' | 'weekly' | 'biweekly'; // legacy
+  post_time: string;           // Format: "HH:MM"
   active: boolean;
-  direction: string | null;    // Ton/Richtung/Stil-Anweisung für die KI
-  website_url: string | null;  // Website/Shop-URL für Werbeposts
+  direction: string | null;
+  website_url: string | null;
+  interval_days: number;       // 1=täglich, 2=alle 2 Tage, 7=wöchentlich
+  post_weekdays: string | null; // z.B. "monday,wednesday,friday" oder null
+  use_weekly_brief: boolean;   // Strategy-Kontext aus Weekly Brief einbeziehen
+  with_image: boolean;         // Bild generieren (coming soon)
+  last_auto_posted_at: string | null;
   created_at: string;
 }
 

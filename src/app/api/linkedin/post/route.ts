@@ -75,20 +75,29 @@ export async function POST(request: NextRequest) {
       content.trim()
     );
 
-    // 7. Falls postId angegeben: Post-Status in Supabase aktualisieren
+    // 7. Post in Supabase speichern / aktualisieren
     if (postId) {
+      // Bestehenden Post auf "posted" setzen
       const { error: updateError } = await supabase
         .from('posts')
-        .update({
-          status: 'posted',
-          posted_at: new Date().toISOString(),
-        })
+        .update({ status: 'posted', posted_at: new Date().toISOString() })
         .eq('id', postId)
-        .eq('user_id', user.id); // Sicherheitscheck
-
+        .eq('user_id', user.id);
       if (updateError) {
         console.error('[POST /api/linkedin/post] Post-Update Fehler:', updateError);
-        // Kein harter Fehler – Post wurde bereits veröffentlicht
+      }
+    } else {
+      // Kein postId → neuen Post-Eintrag anlegen damit er in "Meine Posts" erscheint
+      const { error: insertError } = await supabase
+        .from('posts')
+        .insert({
+          user_id: user.id,
+          content: content.trim(),
+          status: 'posted',
+          posted_at: new Date().toISOString(),
+        });
+      if (insertError) {
+        console.error('[POST /api/linkedin/post] Post-Insert Fehler:', insertError);
       }
     }
 
