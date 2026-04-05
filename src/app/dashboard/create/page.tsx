@@ -136,6 +136,7 @@ export default function CreatePostPage() {
 
       setStatus(v.variant, 'saved');
       toast.success('Draft gespeichert!');
+      setTimeout(() => router.push('/dashboard/posts'), 800);
     } catch (error) {
       setStatus(v.variant, 'idle');
       toast.error(error instanceof Error ? error.message : 'Speichern fehlgeschlagen.');

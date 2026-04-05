@@ -6,7 +6,7 @@
 // ============================================================
 
 import { useState, useEffect, useCallback } from 'react';
-import { Clock, Plus, Trash2, Power, Zap } from 'lucide-react';
+import { Clock, Plus, Trash2, Power, Zap, Globe, MessageSquare } from 'lucide-react';
 import type { Schedule } from '@/types';
 
 // Uhrzeiten in 30-Minuten-Schritten von 00:00 bis 23:30
@@ -28,6 +28,8 @@ export default function AutopilotPage() {
   const [topic, setTopic] = useState('');
   const [postTime, setPostTime] = useState('09:00');
   const [active, setActive] = useState(true);
+  const [direction, setDirection] = useState('');
+  const [websiteUrl, setWebsiteUrl] = useState('');
 
   // ── Schedules laden ───────────────────────────────────────
   const loadSchedules = useCallback(async () => {
@@ -59,7 +61,13 @@ export default function AutopilotPage() {
       const response = await fetch('/api/schedules', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ topic: topic.trim(), post_time: postTime, active }),
+        body: JSON.stringify({
+          topic: topic.trim(),
+          post_time: postTime,
+          active,
+          direction: direction.trim() || null,
+          website_url: websiteUrl.trim() || null,
+        }),
       });
 
       if (!response.ok) {
@@ -72,6 +80,8 @@ export default function AutopilotPage() {
       setTopic('');
       setPostTime('09:00');
       setActive(true);
+      setDirection('');
+      setWebsiteUrl('');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unbekannter Fehler');
     } finally {
@@ -198,6 +208,40 @@ export default function AutopilotPage() {
           </select>
         </div>
 
+        {/* Richtung / Ton */}
+        <div>
+          <label htmlFor="direction" className="block text-sm font-medium text-gray-700 mb-1.5">
+            <MessageSquare className="inline w-4 h-4 mr-1 text-gray-400" />
+            Richtung & Ton <span className="text-gray-400 font-normal">(optional)</span>
+          </label>
+          <textarea
+            id="direction"
+            value={direction}
+            onChange={(e) => setDirection(e.target.value)}
+            placeholder="z.B. immer mit einer persönlichen Erfahrung beginnen, am Ende eine Frage stellen, motivierend und direkt"
+            rows={2}
+            className="w-full rounded-lg border border-gray-300 px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition resize-none"
+          />
+          <p className="text-xs text-gray-400 mt-1">Erkläre Postona wie deine Posts klingen sollen</p>
+        </div>
+
+        {/* Website / Shop URL */}
+        <div>
+          <label htmlFor="website_url" className="block text-sm font-medium text-gray-700 mb-1.5">
+            <Globe className="inline w-4 h-4 mr-1 text-gray-400" />
+            Website / Shop URL <span className="text-gray-400 font-normal">(optional)</span>
+          </label>
+          <input
+            id="website_url"
+            type="url"
+            value={websiteUrl}
+            onChange={(e) => setWebsiteUrl(e.target.value)}
+            placeholder="https://deineshop.de"
+            className="w-full rounded-lg border border-gray-300 px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition"
+          />
+          <p className="text-xs text-gray-400 mt-1">Postona erwähnt dein Angebot natürlich in Posts um Traffic zu generieren</p>
+        </div>
+
         {/* Aktiv-Toggle */}
         <div className="flex items-center justify-between">
           <span className="text-sm font-medium text-gray-700">Sofort aktivieren</span>
@@ -257,6 +301,15 @@ export default function AutopilotPage() {
                     <Clock className="w-3.5 h-3.5" />
                     {schedule.post_time} Uhr &middot; {schedule.frequency}
                   </p>
+                  {schedule.website_url && (
+                    <p className="mt-0.5 flex items-center gap-1 text-xs text-blue-500 truncate">
+                      <Globe className="w-3 h-3 shrink-0" />
+                      {schedule.website_url}
+                    </p>
+                  )}
+                  {schedule.direction && (
+                    <p className="mt-0.5 text-xs text-gray-400 truncate italic">&ldquo;{schedule.direction}&rdquo;</p>
+                  )}
                 </div>
 
                 {/* Status-Badge */}

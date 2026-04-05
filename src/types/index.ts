@@ -56,6 +56,8 @@ export interface Schedule {
   frequency: 'daily' | 'weekly' | 'biweekly';
   post_time: string;      // Format: "HH:MM" z.B. "09:00"
   active: boolean;
+  direction: string | null;    // Ton/Richtung/Stil-Anweisung für die KI
+  website_url: string | null;  // Website/Shop-URL für Werbeposts
   created_at: string;
 }
 

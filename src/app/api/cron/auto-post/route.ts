@@ -17,6 +17,8 @@ interface Schedule {
   topic: string;
   post_time: string;
   active: boolean;
+  direction: string | null;
+  website_url: string | null;
 }
 
 interface StyleProfile {
@@ -128,7 +130,14 @@ export async function GET(request: NextRequest) {
           messages: [
             {
               role: 'user',
-              content: `Thema: ${schedule.topic}.\n\nAktuelle News:\n${newsHeadlines}\n\nStil-Profil: ${styleDescription}\n\nSchreibe einen LinkedIn-Post der diese Infos aufgreift und im angegebenen Stil verfasst ist.`,
+              content: [
+                `Thema: ${schedule.topic}.`,
+                `\nAktuelle News:\n${newsHeadlines}`,
+                `\nStil-Profil: ${styleDescription}`,
+                schedule.direction ? `\nTon & Richtung (wichtig!): ${schedule.direction}` : '',
+                schedule.website_url ? `\nDer Nutzer betreibt folgendes Unternehmen/Produkt: ${schedule.website_url} – erwähne es natürlich und subtil im Post wenn es thematisch passt, um Interesse und Traffic zu wecken.` : '',
+                `\nSchreibe einen LinkedIn-Post der diese Infos aufgreift und im angegebenen Stil verfasst ist.`,
+              ].filter(Boolean).join(''),
             },
           ],
         });

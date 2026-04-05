@@ -248,7 +248,7 @@ export default function OnboardingPage() {
           </div>
           <h2 className="text-2xl font-bold text-slate-900 mb-3">KI analysiert deinen Stil…</h2>
           <p className="text-slate-500 text-sm leading-relaxed">
-            Claude liest deine Posts und erstellt dein persönliches Stil-Profil.
+            Postona analysiert deine Posts und erstellt dein persönliches Stil-Profil.
             Das dauert ca. 15–30 Sekunden.
           </p>
           <div className="mt-8 space-y-2 text-left bg-white rounded-xl p-4 border border-slate-100">

@@ -179,7 +179,7 @@ export default function BillingPage() {
             </button>
           )}
           <Link
-            href="/pricing"
+            href="/dashboard/pricing"
             className="inline-flex items-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 transition"
           >
             {isFree ? 'Plan upgraden' : 'Plan wechseln'}
@@ -200,7 +200,7 @@ export default function BillingPage() {
               </p>
             </div>
             <Link
-              href="/pricing"
+              href="/dashboard/pricing"
               className="flex-shrink-0 inline-flex items-center justify-center rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 transition shadow-sm"
             >
               Jetzt upgraden

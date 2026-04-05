@@ -2,14 +2,73 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Postona nutzt explizites Light-Theme via Tailwind-Klassen.
-   Kein automatisches Dark-Mode-Switching über CSS-Variablen. */
 body {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: Inter, Arial, Helvetica, sans-serif;
 }
 
 @layer utilities {
   .text-balance {
     text-wrap: balance;
   }
+}
+
+/* ── Animationen ───────────────────────────────────────────── */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+@keyframes blob {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33%       { transform: translate(20px, -20px) scale(1.05); }
+  66%       { transform: translate(-10px, 10px) scale(0.97); }
+}
+
+.animate-float     { animation: float 5s ease-in-out infinite; }
+.animate-fade-in   { animation: fadeIn 0.6s ease-out both; }
+.animate-fade-up   { animation: fadeInUp 0.6s ease-out both; }
+.animate-blob      { animation: blob 8s ease-in-out infinite; }
+
+.animation-delay-200 { animation-delay: 0.2s; }
+.animation-delay-400 { animation-delay: 0.4s; }
+.animation-delay-600 { animation-delay: 0.6s; }
+.animation-delay-2000 { animation-delay: 2s; }
+.animation-delay-4000 { animation-delay: 4s; }
+
+/* ── Gradient Text ─────────────────────────────────────────── */
+.text-gradient {
+  background: linear-gradient(135deg, #3B82F6, #6366F1);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Glassmorphism ─────────────────────────────────────────── */
+.glass {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.glass-white {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
 }

@@ -9,6 +9,11 @@ export const metadata: Metadata = {
   title: 'Postona – LinkedIn-Posts im eigenen Stil, automatisch',
   description: 'Generiere und plane LinkedIn-Posts die klingen wie du – powered by KI. Wachse deine Personal Brand auf Autopilot.',
   keywords: 'LinkedIn, KI, Personal Brand, Content Creation, Social Media Automation',
+  icons: {
+    icon: '/logo.svg',
+    shortcut: '/logo.svg',
+    apple: '/logo.svg',
+  },
   openGraph: {
     title: 'Postona – LinkedIn-Posts im eigenen Stil',
     description: 'KI generiert LinkedIn-Posts in deinem persönlichen Schreibstil.',

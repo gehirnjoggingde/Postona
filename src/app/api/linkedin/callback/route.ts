@@ -90,9 +90,10 @@ export async function GET(request: NextRequest) {
 
     return response;
   } catch (error) {
-    console.error('[GET /api/linkedin/callback] Fehler:', error);
+    const msg = error instanceof Error ? error.message : 'Unbekannter Fehler';
+    console.error('[GET /api/linkedin/callback] Fehler:', msg);
     return NextResponse.redirect(
-      new URL('/dashboard?error=linkedin_callback_failed', APP_URL)
+      new URL(`/dashboard?error=${encodeURIComponent(msg)}`, APP_URL)
     );
   }
 }

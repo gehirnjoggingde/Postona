@@ -3,10 +3,13 @@
 // Lädt User-Daten und letzte Posts serverseitig
 // ============================================================
 
+export const dynamic = 'force-dynamic';
+
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server';
-import { Plus, Zap, Clock, CheckCircle2, FileText, ArrowRight } from 'lucide-react';
+import { getUserPlan } from '@/lib/subscription';
+import { Plus, Zap, Clock, CheckCircle2, FileText, ArrowRight, Link2, Crown } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { de } from 'date-fns/locale';
 import type { Post } from '@/types';
@@ -27,12 +30,14 @@ export default async function DashboardPage() {
 
   if (!styleProfile) redirect('/onboarding');
 
-  // User-Profil laden
+  // User-Profil laden (inkl. LinkedIn-Status)
   const { data: userProfile } = await supabase
     .from('users')
-    .select('name')
+    .select('name, linkedin_token, linkedin_urn')
     .eq('id', user.id)
     .single();
+
+  const linkedinConnected = !!userProfile?.linkedin_token;
 
   // Letzte 5 Posts laden
   const { data: recentPosts } = await supabase
@@ -61,6 +66,8 @@ export default async function DashboardPage() {
     .eq('status', 'posted');
 
   const firstName = userProfile?.name?.split(' ')[0] || 'dort';
+  const currentPlan = await getUserPlan(user.id, supabase);
+  const isFree = currentPlan === 'free';
 
   return (
     <div className="p-8 max-w-5xl mx-auto">
@@ -74,10 +81,64 @@ export default async function DashboardPage() {
         </p>
       </div>
 
+      {/* ── LinkedIn-Banner ───────────────────────────────────── */}
+      {!linkedinConnected && (
+        <div className="flex items-center justify-between bg-blue-600 text-white rounded-2xl px-6 py-4 mb-6">
+          <div className="flex items-center gap-3">
+            <Link2 size={22} />
+            <div>
+              <p className="font-semibold text-sm">LinkedIn noch nicht verbunden</p>
+              <p className="text-blue-200 text-xs">Verbinde deinen Account um Posts direkt zu veröffentlichen.</p>
+            </div>
+          </div>
+          <a
+            href="/api/linkedin/auth"
+            className="shrink-0 bg-white text-blue-600 font-semibold text-sm px-4 py-2 rounded-xl hover:bg-blue-50 transition-colors"
+          >
+            Jetzt verbinden →
+          </a>
+        </div>
+      )}
+
+      {linkedinConnected && (
+        <div className="flex items-center gap-3 bg-green-50 border border-green-100 rounded-2xl px-6 py-3 mb-6">
+          <Link2 size={18} className="text-green-600" />
+          <p className="text-green-700 text-sm font-medium">LinkedIn verbunden ✓</p>
+          <a href="/api/linkedin/auth" className="ml-auto text-xs text-green-600 hover:underline">
+            Erneut verbinden
+          </a>
+        </div>
+      )}
+
+      {/* ── Upgrade Banner für Free-User ─────────────────────── */}
+      {isFree && (
+        <div className="relative overflow-hidden bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-700 rounded-2xl p-6 mb-6 text-white">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-32 translate-x-32" />
+          <div className="relative flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <Crown size={16} className="text-yellow-300" />
+                <span className="text-blue-200 text-sm font-medium">Free Plan aktiv</span>
+              </div>
+              <h3 className="text-lg font-bold mb-1">Du lässt Potenzial liegen.</h3>
+              <p className="text-blue-200 text-sm">
+                Upgrade auf Pro: Unbegrenzte Posts, Autopilot, direkt auf LinkedIn posten.
+              </p>
+            </div>
+            <Link
+              href="/dashboard/pricing"
+              className="shrink-0 bg-white text-blue-700 font-bold px-6 py-3 rounded-xl hover:bg-blue-50 transition-colors text-sm whitespace-nowrap shadow-lg"
+            >
+              Jetzt upgraden →
+            </Link>
+          </div>
+        </div>
+      )}
+
       {/* ── Quick Actions ─────────────────────────────────────── */}
       <div className="grid sm:grid-cols-2 gap-4 mb-8">
         <QuickActionCard
-          href="/dashboard/posts/new"
+          href="/dashboard/create"
           icon={Plus}
           iconColor="bg-blue-600"
           title="Post erstellen"
@@ -85,7 +146,7 @@ export default async function DashboardPage() {
           cta="Jetzt erstellen"
         />
         <QuickActionCard
-          href="/dashboard/schedule"
+          href="/dashboard/autopilot"
           icon={Zap}
           iconColor="bg-purple-600"
           title="Auto-Pilot einrichten"
@@ -96,9 +157,9 @@ export default async function DashboardPage() {
 
       {/* ── Statistiken ───────────────────────────────────────── */}
       <div className="grid grid-cols-3 gap-4 mb-8">
-        <StatCard label="Posts gesamt" value={totalPosts ?? 0} icon={FileText} color="text-slate-600" />
-        <StatCard label="Geplant" value={scheduledPosts ?? 0} icon={Clock} color="text-amber-600" />
-        <StatCard label="Veröffentlicht" value={postedPosts ?? 0} icon={CheckCircle2} color="text-green-600" />
+        <StatCard label="Posts gesamt" value={totalPosts ?? 0} icon={FileText} gradient="from-slate-500 to-slate-700" />
+        <StatCard label="Geplant" value={scheduledPosts ?? 0} icon={Clock} gradient="from-amber-500 to-orange-500" />
+        <StatCard label="Veröffentlicht" value={postedPosts ?? 0} icon={CheckCircle2} gradient="from-emerald-500 to-green-600" />
       </div>
 
       {/* ── Stil-Profil Badge ─────────────────────────────────── */}
@@ -169,7 +230,7 @@ function QuickActionCard({
   return (
     <Link
       href={href}
-      className="group bg-white border-2 border-slate-100 hover:border-blue-200 rounded-2xl p-6 transition-all hover:shadow-md"
+      className="group bg-white border-2 border-slate-100 hover:border-blue-200 rounded-2xl p-6 transition-all hover:shadow-lg hover:shadow-blue-50 hover:-translate-y-1"
     >
       <div className={`inline-flex p-2.5 rounded-xl ${iconColor} mb-4`}>
         <Icon size={20} className="text-white" />
@@ -187,20 +248,20 @@ function StatCard({
   label,
   value,
   icon: Icon,
-  color,
+  gradient,
 }: {
   label: string;
   value: number;
   icon: React.ElementType;
-  color: string;
+  gradient: string;
 }) {
   return (
-    <div className="bg-white rounded-2xl border border-slate-100 p-5">
-      <div className="flex items-center gap-2 mb-2">
-        <Icon size={16} className={color} />
-        <span className="text-xs text-slate-500 font-medium">{label}</span>
+    <div className="bg-white rounded-2xl border border-slate-100 p-5 hover:shadow-md transition-shadow">
+      <div className={`inline-flex p-2 rounded-lg bg-gradient-to-br ${gradient} mb-3`}>
+        <Icon size={14} className="text-white" />
       </div>
-      <p className="text-3xl font-bold text-slate-900">{value}</p>
+      <p className="text-3xl font-bold text-slate-900 mb-0.5">{value}</p>
+      <span className="text-xs text-slate-500 font-medium">{label}</span>
     </div>
   );
 }
@@ -255,7 +316,7 @@ function EmptyPostsState() {
         Erstelle deinen ersten KI-generierten LinkedIn-Post.
       </p>
       <Link
-        href="/dashboard/posts/new"
+        href="/dashboard/create"
         className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-5 py-2.5 rounded-xl text-sm transition-colors"
       >
         <Plus size={16} />

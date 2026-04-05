@@ -58,11 +58,15 @@ export async function POST(request: NextRequest) {
       frequency,
       post_time,
       active,
+      direction,
+      website_url,
     } = body as {
       topic?: string;
       frequency?: Schedule['frequency'];
       post_time?: string;
       active?: boolean;
+      direction?: string | null;
+      website_url?: string | null;
     };
 
     if (!topic || typeof topic !== 'string' || topic.trim().length === 0) {
@@ -104,6 +108,8 @@ export async function POST(request: NextRequest) {
         frequency: scheduleFrequency,
         post_time,
         active: active ?? true,
+        direction: direction ?? null,
+        website_url: website_url ?? null,
       })
       .select()
       .single();
