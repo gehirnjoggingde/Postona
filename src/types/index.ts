@@ -36,6 +36,11 @@ export interface StyleProfile {
   sentence_length: 'short' | 'medium' | 'long';
   emoji_usage: 'none' | 'minimal' | 'moderate' | 'heavy';
   sample_posts: string[]; // Array von Beispiel-Posts des Nutzers
+  // Strategie-Felder (optional)
+  dream_client: string | null;
+  usp: string | null;
+  industry_opinion: string | null;
+  linkedin_goal: string | null;
   created_at: string;
 }
 

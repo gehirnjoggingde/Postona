@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { LayoutDashboard, FileText, Zap, CreditCard, PenSquare, Settings, LogOut, Sparkles, Crown } from 'lucide-react';
+import { LayoutDashboard, FileText, Zap, CreditCard, PenSquare, Settings, LogOut, Sparkles, Crown, NotebookPen } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { createClient } from '@/lib/supabase/client';
 import toast from 'react-hot-toast';
@@ -11,6 +11,7 @@ import toast from 'react-hot-toast';
 const NAV_ITEMS = [
   { href: '/dashboard',           label: 'Dashboard',      icon: LayoutDashboard },
   { href: '/dashboard/create',    label: 'Post erstellen', icon: PenSquare },
+  { href: '/dashboard/brief',     label: 'Weekly Brief',   icon: NotebookPen },
   { href: '/dashboard/autopilot', label: 'Auto-Pilot',     icon: Zap },
   { href: '/dashboard/posts',     label: 'Meine Posts',    icon: FileText },
   { href: '/dashboard/billing',   label: 'Abonnement',     icon: CreditCard },
